@@ -4,8 +4,8 @@ import { Device, DeviceStatus } from "./lib/device";
 import { Message, MsgType, msg } from "./lib/messaging";
 
 let devices: Device[] = [
-  new Device({ name: '8466-web01', ip: '10.128.128.70', status: DeviceStatus.Up }),
-  new Device({ name: 'Router', ip: '10.1.1.1', status: DeviceStatus.Up }),
+  new Device({ id: '8466-web01', ip: '10.128.128.70', status: DeviceStatus.Up }),
+  new Device({ id: 'Router', ip: '10.1.1.1', status: DeviceStatus.Up }),
 ]
 
 let maps = new Map<string, NetworkMap>()
@@ -23,8 +23,15 @@ wss.on('connection', (ws, message) => {
     }
     else if (message.type === MsgType.GetMap) {
       let map = maps.get(message.data)
-      if (map) ws.send(JSON.stringify(msg(MsgType.Reply, map, message.reply)))
-      else ws.send(JSON.stringify(msg(MsgType.Reply, null, message.reply)))
+      if (map) ws.send(msg(MsgType.Reply, map, message.reply))
+      else ws.send(msg(MsgType.Reply, null, message.reply))
+    }
+    else if (message.type === MsgType.GetDevices) {
+      var deviceInfo = devices.map((v) => ({
+        id: v.id,
+        ip: v.ip
+      }))
+      ws.send(msg(MsgType.Reply, deviceInfo, message.reply))
     }
 
   })
@@ -41,7 +48,7 @@ wss.on('connection', (ws, message) => {
 const server = createServer((req, res) => {
   let html = ""
   for (const d of devices) {
-    html += `${d.name} - ${d.ip} - ${d.getStatus()}\n`
+    html += `${d.id} - ${d.ip} - ${d.getStatus()}\n`
   }
   res.write(html)
   res.end()

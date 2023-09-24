@@ -7,20 +7,20 @@ export enum DeviceStatus {
 }
 
 export interface DeviceInfo {
-  name: string;
+  id: string;
   ip: string;
   status: DeviceStatus;
 }
 
 export class Device {
 
-  name: string;
+  id: string;
   ip: string;
   status: DeviceStatus;
   poker: any
 
   constructor(info: DeviceInfo) {
-    this.name = info.name;
+    this.id = info.id;
     this.ip = info.ip;
     this.status = info.status
     this.poker = this.setPingSelf()
