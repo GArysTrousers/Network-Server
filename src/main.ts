@@ -1,5 +1,5 @@
 import { createServer } from "http";
-import { WebSocketServer } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import { Device, DeviceStatus } from "./lib/device";
 import { Message, MsgType, msg } from "./lib/messaging";
 
@@ -11,9 +11,12 @@ let devices: Device[] = [
 let maps = new Map<string, NetworkMap>()
 
 const wss = new WebSocketServer({ port: 3001 })
+const sockets:WebSocket[] = []
 
 wss.on('connection', (ws, message) => {
   console.log("New Connection");
+  sockets.push(ws)
+  console.log("Clients connected:", sockets.length);
   ws.on('message', (raw) => {
     let message = JSON.parse(raw.toString()) as Message
 
@@ -40,6 +43,8 @@ wss.on('connection', (ws, message) => {
   })
   ws.on('close', (message) => {
     console.log("Closed Connection");
+    sockets.splice(sockets.indexOf(ws), 1)
+    console.log("Clients connected:", sockets.length);
   })
 })
 
