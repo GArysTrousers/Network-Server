@@ -1,8 +1,9 @@
 
 interface NetworkMap {
-  map_name: string;
+  id: string;
   rooms: MapRoom[][];
-  device: MapDevice[]
+  devices: MapDevice[];
+  connections: MapConnection[];
 }
 
 interface MapRoom {
@@ -12,4 +13,9 @@ interface MapRoom {
 interface MapDevice {
   device_name: string;
   position: number[];
+}
+
+interface MapConnection {
+  a: string;
+  b: string;
 }

@@ -7,7 +7,9 @@ export enum MsgType {
   Reply,
   SaveMap,
   GetMap,
-  GetDevices
+  GetDevices,
+  GetDeviceStatus,
+  StatusUpdate,
 }
 
 export interface Message {

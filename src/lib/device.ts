@@ -2,8 +2,14 @@ import { setInterval } from "timers";
 import ping from "ping";
 
 export enum DeviceStatus {
+  Unknown,
   Up,
   Down
+}
+
+export interface StatusUpdate {
+  id: string; 
+  status: DeviceStatus
 }
 
 export interface DeviceInfo {
@@ -18,29 +24,35 @@ export class Device {
   ip: string;
   status: DeviceStatus;
   poker: any
+  onStatusChange:(id: string, status: DeviceStatus) => void
 
-  constructor(info: DeviceInfo) {
+  constructor(info: DeviceInfo, onStatusChange:(id: string, status: DeviceStatus) => void) {
     this.id = info.id;
     this.ip = info.ip;
     this.status = info.status
     this.poker = this.setPingSelf()
+    this.onStatusChange = onStatusChange
   }
 
   setPingSelf() {
     const device = this
     return setInterval(() => {
       ping.sys.probe(device.ip, (isAlive: boolean | null, error: unknown) => {
-        device.status = isAlive ? DeviceStatus.Up : DeviceStatus.Down;
+        let newStatus = isAlive ? DeviceStatus.Up : DeviceStatus.Down;
+        if (device.status !== newStatus) device.onStatusChange(device.id, newStatus)
+        device.status = newStatus
       })
     }, 2000 + Math.random())
   }
 
   getStatus() {
     switch (this.status) {
+      case DeviceStatus.Unknown:
+        return "Unknown"
       case DeviceStatus.Up:
         return "Up";
       case DeviceStatus.Down:
-          return "Down";
+        return "Down";
       default:
         return "?"
     }
