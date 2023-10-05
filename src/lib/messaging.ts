@@ -10,6 +10,7 @@ export enum MsgType {
   GetDevices,
   GetDeviceStatus,
   StatusUpdate,
+  SaveDevice,
 }
 
 export interface Message {

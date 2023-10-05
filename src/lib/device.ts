@@ -8,14 +8,14 @@ export enum DeviceStatus {
 }
 
 export interface StatusUpdate {
-  id: string; 
+  id: string;
   status: DeviceStatus
 }
 
 export interface DeviceInfo {
   id: string;
+  label: string;
   ip: string;
-  status: DeviceStatus;
 }
 
 export class Device {
@@ -24,12 +24,12 @@ export class Device {
   ip: string;
   status: DeviceStatus;
   poker: any
-  onStatusChange:(id: string, status: DeviceStatus) => void
+  onStatusChange: (id: string, status: DeviceStatus) => void
 
-  constructor(info: DeviceInfo, onStatusChange:(id: string, status: DeviceStatus) => void) {
+  constructor(info: DeviceInfo, onStatusChange: (id: string, status: DeviceStatus) => void) {
     this.id = info.id;
     this.ip = info.ip;
-    this.status = info.status
+    this.status = DeviceStatus.Unknown
     this.poker = this.setPingSelf()
     this.onStatusChange = onStatusChange
   }

@@ -5,6 +5,7 @@ import { Message, MsgType, msg } from "./lib/messaging";
 import { Table } from "pixidb";
 
 const dbPath = "C:/temp/network-monitor"
+Table.loglevel = 1
 
 const db = {
   maps: new Table<NetworkMap>('maps', dbPath),
@@ -37,10 +38,7 @@ wss.on('connection', (ws, message) => {
       else ws.send(msg(MsgType.Reply, null, message.reply))
     }
     else if (message.type === MsgType.GetDevices) {
-      let deviceInfo = db.devices.getAll().map((v) => ({
-        id: v.id,
-        ip: v.ip
-      }))
+      let deviceInfo = db.deviceInfo.getAll()
       ws.send(msg(MsgType.Reply, deviceInfo, message.reply))
     }
     else if (message.type === MsgType.GetDeviceStatus) {
@@ -55,6 +53,16 @@ wss.on('connection', (ws, message) => {
         ws.send(msg(MsgType.Reply, status, message.reply))
       }
       ws.send(msg(MsgType.Reply, null, message.reply))
+    }
+    else if (message.type === MsgType.SaveDevice) {
+      let info = message.data
+      if (db.deviceInfo.new(info)) {
+        db.devices.new(new Device(info, updateDeviceStatus))
+      } else {
+        db.deviceInfo.set(info)
+        db.devices.removeOne(info.id)
+        db.devices.new(new Device(info, updateDeviceStatus))
+      }
     }
   })
   ws.on('error', (message) => {
