@@ -64,6 +64,10 @@ wss.on('connection', (ws, message) => {
         db.devices.new(new Device(info, updateDeviceStatus))
       }
     }
+    else if (message.type === MsgType.DeleteDevice) {
+      db.deviceInfo.removeOne(message.data)
+      db.devices.removeOne(message.data)
+    }
   })
   ws.on('error', (message) => {
     console.log("Error");
@@ -76,7 +80,7 @@ wss.on('connection', (ws, message) => {
 })
 
 function updateDeviceStatus(id: string, status: DeviceStatus) {
-  let newStatus = {id, status}
+  let newStatus = { id, status }
   for (const ws of sockets) {
     ws.send(msg(MsgType.StatusUpdate, newStatus))
   }
@@ -85,7 +89,7 @@ function updateDeviceStatus(id: string, status: DeviceStatus) {
 const server = createServer((req, res) => {
   let html = ""
   for (const d of db.devices.getAll()) {
-    html += `${d.id} - ${d.ip} - ${d.getStatus()}\n`
+    html += `${d.id} - ${d.label} - ${d.ip} - ${d.getStatus()}\n`
   }
   res.write(html)
   res.end()

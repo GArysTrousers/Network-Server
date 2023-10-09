@@ -21,6 +21,7 @@ export interface DeviceInfo {
 export class Device {
 
   id: string;
+  label: string;
   ip: string;
   status: DeviceStatus;
   poker: any
@@ -28,6 +29,7 @@ export class Device {
 
   constructor(info: DeviceInfo, onStatusChange: (id: string, status: DeviceStatus) => void) {
     this.id = info.id;
+    this.label = info.label;
     this.ip = info.ip;
     this.status = DeviceStatus.Unknown
     this.poker = this.setPingSelf()

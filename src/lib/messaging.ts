@@ -11,6 +11,7 @@ export enum MsgType {
   GetDeviceStatus,
   StatusUpdate,
   SaveDevice,
+  DeleteDevice,
 }
 
 export interface Message {
